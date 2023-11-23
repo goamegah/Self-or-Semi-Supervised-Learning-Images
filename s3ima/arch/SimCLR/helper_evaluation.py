@@ -45,6 +45,28 @@ def compute_accuracy(model, data_loader, device):
     return correct_pred.float()/num_examples * 100
 
 
+def compute_topk_accuracy(model, dataloader, args, topk=(1, 5)):
+    model.eval()
+    for epoch in range(args.eval_epochs):
+        top1_accuracy = 0
+        top5_accuracy = 0
+        for counter, (x_batch, y_batch) in enumerate(dataloader):
+            x_batch = x_batch.to(args.device)
+            y_batch = y_batch.to(args.device)
+
+            logits = model(x_batch)
+
+            top1, top5 = accuracy(logits, y_batch, topk)
+            top1_accuracy += top1[0]
+            top5_accuracy += top5[0]
+
+        top1_accuracy /= len(dataloader)
+        top5_accuracy /= len(dataloader)
+        print(f"Epoch {epoch}\t"
+              f"Top1 Test accuracy: {top1_accuracy.item()}\t"
+              f"Top5 test acc: {top5_accuracy.item()}")
+
+
 def compute_confusion_matrix(model, data_loader, device):
 
     all_targets, all_predictions = [], []

@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import sys
 sys.path.insert(0, "../../..")
-from ssima.arch.ResNet18.model import ResNet18, BasicBlock
+from s3ima.arch.ResNet18.model import ResNet18, BasicBlock
 
 GRAYSCALE = True
 

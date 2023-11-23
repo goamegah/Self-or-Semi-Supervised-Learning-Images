@@ -2,7 +2,7 @@ import torch
 from torchvision import transforms
 from torchvision import datasets
 # from torch.utils.data import SubsetRandomSampler
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, SubsetRandomSampler
 from torch.utils.data import Subset, ConcatDataset
 from helper_augmentation import SimclrViewGenerator
 
@@ -24,24 +24,24 @@ class SimclrDataset:
 
         return transform
 
-    def get_dataset(self,
-                    args,
-                    dataset_name: str,
+    def get_dataset(self, dataset_name: str,
                     n_views: int,
-                    finetune_validation_fraction=None):
+                    finetune_validation_fraction=None,
+                    args=None):
 
         if dataset_name == "mnist":
 
             test_dataset = datasets.MNIST(
                 root=self.root,
                 train=False,
-                download=False,
+                download=True,
                 transform=transforms.ToTensor()
             )
 
             # mnist_dataset = ConcatDataset([train_dataset, test_dataset])
 
             if args.mode == "train":
+
                 # pretrain dataset
                 mnist_pretrain_dataset = datasets.MNIST(
                     root=self.root,
@@ -56,6 +56,14 @@ class SimclrDataset:
                 # which train mode
 
                 if args.train_mode == "finetune":
+
+                    mnist_train_dataset = datasets.MNIST(
+                        root=self.root,
+                        train=True,
+                        download=False,
+                        transform=transforms.ToTensor()
+                    )
+
                     if finetune_validation_fraction is not None:
                         num = int(finetune_validation_fraction * 100)
                         train_indices = torch.arange(0, 100 - num)
@@ -64,23 +72,20 @@ class SimclrDataset:
                         # train_sampler = SubsetRandomSampler(train_indices)
                         # valid_sampler = SubsetRandomSampler(valid_indices)
 
-                        mnist_train_dataset = datasets.MNIST(
-                            root=self.root,
-                            train=True,
-                            download=False,
-                        )
-
                         # 100 samples off of train dataset
-                        mnist_train_dataset_100 = Subset(dataset=mnist_train_dataset,
-                                                         indices=train_indices)
+                        mnist_train_dataset_70 = Subset(dataset=mnist_train_dataset,
+                                                        indices=train_indices)
 
-                        mnist_valid_dataset_100 = Subset(dataset=mnist_train_dataset,
-                                                         indices=valid_indices)
+                        mnist_valid_dataset_30 = Subset(dataset=mnist_train_dataset,
+                                                        indices=valid_indices)
 
-                        return mnist_train_dataset_100, mnist_valid_dataset_100, test_dataset
+                        return mnist_train_dataset_70, mnist_valid_dataset_30, test_dataset
 
                     else:   # not validation dataset
-                        return None
+                        train_indices = torch.arange(0, 100)
+                        mnist_train_dataset_100 = Subset(dataset=mnist_train_dataset,
+                                                         indices=train_indices)
+                        return mnist_train_dataset_100, None, test_dataset
 
                 else:   # mode pretrain
                     return mnist_pretrain_dataset, None, None
@@ -107,7 +112,7 @@ class SimclrDataset:
                 )
                 """
                 # return mnist_finetune_train_dataset, mnist_finetune_valid_dataset, mnist_finetune_test_dataset
-                return
+                return None, None, test_dataset
 
         else:   # Other dataset
             pass
