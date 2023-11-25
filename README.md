@@ -11,7 +11,7 @@ In order to run models, try the following commands according to specific model.
 
 ### LeNet5
 
-Moving through LeNet5 folder and move to ```run.py```
+Moving through LeNet5 folder and run ```run.py```
 
 ```shell
 $ python run.py --mode train --epochs 100 
@@ -29,7 +29,7 @@ Let's breaking down available flags
 
 ### ResNet-18
 
-Moving through ResNet-18 folder and move to ```run.py```
+Moving through ResNet-18 folder and run ```run.py```
 
 ```shell
 $ python run.py --mode train --epochs 100 
@@ -47,7 +47,7 @@ Let's breaking down available flags
 
 ### SimCLR
 
-Moving through SimCLR folder and move to ```run.py```
+Moving through SimCLR folder and run ```run.py```
 
 ```shell
 $ python run.py --mode train --train-mode finetune --train-epochs 100
