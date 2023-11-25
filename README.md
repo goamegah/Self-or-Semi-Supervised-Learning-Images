@@ -79,17 +79,19 @@ Feature evaluation is done using a linear model protocol.
 
 First, we learned features using SimCLR on the ```MNIST unsupervised``` set. 
 Then, we train a linear classifier on top of the frozen features from SimCLR. 
-The linear model is trained on features extracted from the ```MNIST train``` set and evaluated on the ```STL10 test``` set.
+The linear model is trained on features extracted from the ```MNIST train``` set and evaluated on the ```MNIST test``` set.
 
-Check the [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/sthalles/SimCLR/blob/simclr-refactor/feature_eval/mini_batch_logistic_regression_evaluator.ipynb) notebook for reproducibility.
+Check the [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/goamegah/s3ima/blob/master/s3ima/arch/SimCLR/prototype/eval.ipynb) notebook for reproducibility.
 
-Note that SimCLR benefits from **longer training**.
+| Method                                | Architecture | Accuracy |
+|---------------------------------------|--------------|----------|
+| Supervised baseline                   | LeNet-5      | `73.73`  |
+| Supervised baseline                   | ResNet-18    | `73.26`  |
+| SimCLR                                | ResNet-18    | `93.84`  |
+| SGAN                                  | ConvNet      | `94.65`  |
 
-| Linear Classification      | Dataset | Feature Extractor | Architecture                                                                    | Feature dimensionality | Projection Head dimensionality | Epochs | Top1 % |
-|----------------------------|---------|-------------------|---------------------------------------------------------------------------------|------------------------|--------------------------------|--------|--------|
-| Logistic Regression (Adam) | STL10   | SimCLR            | [ResNet-18](https://drive.google.com/open?id=14_nH2FkyKbt61cieQDiSbBVNP8-gtwgF) | 512                    | 128                            | 100    | 74.45  |
-| Logistic Regression (Adam) | CIFAR10 | SimCLR            | [ResNet-18](https://drive.google.com/open?id=1lc2aoVtrAetGn0PnTkOyFzPCIucOJq7C) | 512                    | 128                            | 100    | 69.82  |
-| Logistic Regression (Adam) | STL10   | SimCLR            | [ResNet-50](https://drive.google.com/open?id=1ByTKAUsdm_X7tLcii6oAEl5qFRqRMZSu) | 2048                   | 128                            | 50     | 70.075 |
+*Données entraînées sur* **100 epochs**.
+
 
 ## Libraries Used In This Project
 
