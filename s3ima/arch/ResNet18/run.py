@@ -6,6 +6,8 @@ import torchvision
 import torch.backends.cudnn as cudnn
 from torchvision import transforms
 import sys
+import os
+import pickle
 
 sys.path.insert(0, "../../../")
 from s3ima.arch.ResNet18.model import ResNet18, BasicBlock
@@ -16,7 +18,7 @@ from helper_train import train_model
 from helper_dataset import get_dataloaders_mnist
 from helper_plotting import plot_training_loss, plot_accuracy, show_examples, plot_confusion_matrix
 
-model_names = ['ResNet18', 'LeNet5']
+model_names = ['ResNet18']
 
 ##########################
 # SETTINGS
@@ -185,6 +187,8 @@ def main():
     optimizer = torch.optim.Adam(params=model.parameters(), lr=args.lr)
 
     if args.mode == 'train':
+        # dict for saving results
+        summary = {}
 
         minibatch_loss_list, train_acc_list, valid_acc_list = train_model(
             model=model,
@@ -201,18 +205,19 @@ def main():
         plot_training_loss(minibatch_loss_list=minibatch_loss_list,
                            num_epochs=args.epochs,
                            iter_per_epoch=len(train_loader),
-                           results_dir=None,
+                           results_dir='./figures',
                            averaging_iterations=args.log_every_n_steps)
         plt.show()
 
         plot_accuracy(train_acc_list=train_acc_list,
                       valid_acc_list=valid_acc_list,
-                      results_dir=None)
+                      results_dir='./figures')
         # plt.ylim([80, 100])
         plt.show()
 
         model.cpu()
-        show_examples(model=model, data_loader=test_loader)
+        show_examples(model=model, data_loader=test_loader, results_dir='./figures')
+        plt.show()
 
         class_dict = {0: '0',
                       1: '1',
@@ -227,8 +232,24 @@ def main():
 
         mat = compute_confusion_matrix(model=model, data_loader=test_loader, device=torch.device('cpu'))
         print(mat)
-        plot_confusion_matrix(mat, class_names=class_dict.values())
+        plot_confusion_matrix(mat, class_names=class_dict.values(), results_dir='./figures')
         plt.show()
+
+        summary['minibatch_loss_list'] = minibatch_loss_list
+        summary['valid_acc_list'] = valid_acc_list
+        summary['train_acc_list'] = train_acc_list
+        summary['confusion_matrix'] = mat
+        summary['num_epochs'] = args.epochs
+        summary['iter_per_epoch'] = len(train_loader)
+        summary['averaging_iterations'] = 100
+
+        # Save trained arch for further usage
+        os.makedirs("./saved_data", exist_ok=True)
+
+        # save dictionary to person_data.pkl file
+        with open('./saved_data/ResNet18_summary.pkl', 'wb') as fp:
+            pickle.dump(summary, fp)
+            print('dictionary saved successfully to file')
 
         # save
         torch.save(obj=model.state_dict(), f="saved_data/model.pt")
@@ -237,7 +258,7 @@ def main():
 
     else:  # eval mode
         model.load_state_dict(state_dict=torch.load(f="saved_data/model.pt"))
-        # optimizer.load_state_dict(state_dict=torch.load(f="saved_data/optimizer.pt"))
+        optimizer.load_state_dict(state_dict=torch.load(f="saved_data/optimizer.pt"))
 
         test_acc = compute_accuracy(model, test_loader, device=args.device)
         print(f'Test accuracy {test_acc :.2f}%')

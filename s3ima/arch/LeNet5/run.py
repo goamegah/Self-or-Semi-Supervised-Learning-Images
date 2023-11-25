@@ -4,6 +4,7 @@ import torchvision
 import matplotlib.pyplot as plt
 import pickle
 import sys
+import os
 
 sys.path.insert(0, "../../../")
 # from arch
@@ -181,18 +182,19 @@ def main():
         plot_training_loss(minibatch_loss_list=minibatch_loss_list,
                            num_epochs=args.epochs,
                            iter_per_epoch=len(train_loader),
-                           results_dir=None,
+                           results_dir="./figures",
                            averaging_iterations=100)
         plt.show()
 
         plot_accuracy(train_acc_list=train_acc_list,
                       valid_acc_list=valid_acc_list,
-                      results_dir=None)
+                      results_dir='./figures')
         # plt.ylim([80, 100])
         plt.show()
 
         model.cpu()
-        show_examples(model=model, data_loader=test_loader)
+        show_examples(model=model, data_loader=test_loader, results_dir='./figures')
+        plt.show()
 
         # class used for confusion matrix axis ticks
         class_dict = {0: '0',
@@ -210,7 +212,9 @@ def main():
         mat = compute_confusion_matrix(model=model,
                                        data_loader=test_loader,
                                        device=torch.device('cpu'))
-        plot_confusion_matrix(mat, class_names=class_dict.values())
+        plot_confusion_matrix(mat,
+                              class_names=class_dict.values(),
+                              results_dir='./figures')
         plt.show()
 
         summary['minibatch_loss_list'] = minibatch_loss_list
@@ -221,19 +225,21 @@ def main():
         summary['iter_per_epoch'] = len(train_loader)
         summary['averaging_iterations'] = 100
 
+        # Save trained arch for further usage
+        os.makedirs("./saved_data", exist_ok=True)
+
         # save dictionary to person_data.pkl file
-        with open('saved_data/LeNet5_summary.pkl', 'wb') as fp:
+        with open('./saved_data/LeNet5_summary.pkl', 'wb') as fp:
             pickle.dump(summary, fp)
             print('dictionary saved successfully to file')
 
-        # Save trained arch for further usage
         torch.save(obj=model.state_dict(), f="saved_data/model.pt")
-        torch.save(obj=optimizer.state_dict(), f="saved_data/optimizer.pt")
-        torch.save(obj=scheduler.state_dict(), f="saved_data/scheduler.pt")
+        torch.save(obj=optimizer.state_dict(), f="./saved_data/optimizer.pt")
+        torch.save(obj=scheduler.state_dict(), f="./saved_data/scheduler.pt")
 
     # eval
     else:
-        model.load_state_dict(state_dict=torch.load(f="saved_data/model.pt"))
+        model.load_state_dict(state_dict=torch.load(f="./saved_data/model.pt"))
         # model is assume to be trained
         # optimizer.load_state_dict(state_dict=torch.load(f="saved_data/optimizer.pt"))
 

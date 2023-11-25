@@ -48,6 +48,7 @@ def plot_training_loss(minibatch_loss_list,
     plt.tight_layout()
 
     if results_dir is not None:
+        os.makedirs(results_dir, exist_ok=True)
         image_path = os.path.join(results_dir, 'plot_training_loss.pdf')
         plt.savefig(image_path)
 
@@ -67,6 +68,8 @@ def plot_accuracy(train_acc_list, valid_acc_list, results_dir):
     plt.tight_layout()
 
     if results_dir is not None:
+        # create if not exist
+        os.makedirs(results_dir, exist_ok=True)
         image_path = os.path.join(
             results_dir, 'plot_acc_training_validation.pdf')
         plt.savefig(image_path)
@@ -75,7 +78,8 @@ def plot_accuracy(train_acc_list, valid_acc_list, results_dir):
 def show_examples(model,
                   data_loader,
                   unnormalizer=None,
-                  class_dict=None):
+                  class_dict=None,
+                  results_dir=None):
     for batch_idx, (features, targets) in enumerate(data_loader):
         with torch.no_grad():
             features = features
@@ -114,8 +118,15 @@ def show_examples(model,
             else:
                 ax.title.set_text(f'P: {predictions[idx]} | T: {targets[idx]}')
             ax.axison = False
+
     plt.tight_layout()
-    plt.show()
+
+    if results_dir is not None:
+        # create if not exist
+        os.makedirs(results_dir, exist_ok=True)
+        image_path = os.path.join(
+            results_dir, 'plot_examples.pdf')
+        plt.savefig(image_path)
 
 
 def plot_confusion_matrix(conf_mat,
@@ -126,7 +137,8 @@ def plot_confusion_matrix(conf_mat,
                           colorbar=False,
                           show_absolute=True,
                           show_normed=False,
-                          class_names=None):
+                          class_names=None,
+                          results_dir=None):
     if not (show_absolute or show_normed):
         raise AssertionError('Both show_absolute and show_normed are False')
     if class_names is not None and len(class_names) != len(conf_mat):
@@ -187,5 +199,11 @@ def plot_confusion_matrix(conf_mat,
 
     plt.xlabel('predicted label')
     plt.ylabel('true label')
+
+    if results_dir is not None:
+        os.makedirs(results_dir, exist_ok=True)
+        image_path = os.path.join(
+            results_dir, 'plot_confusion_matrix.pdf')
+        plt.savefig(image_path)
     return fig, ax
 
