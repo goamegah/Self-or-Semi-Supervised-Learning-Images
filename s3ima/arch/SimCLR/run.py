@@ -39,7 +39,7 @@ parser.add_argument('-tm', '--train-mode',
 parser.add_argument('-dn', '--dataset-name',
                     default='mnist',
                     help='dataset name',
-                    choices=['stl10', 'cifar10', 'mnist'])
+                    choices=['mnist'])
 
 parser.add_argument('-a', '--arch',
                     metavar='ARCH',
@@ -53,7 +53,7 @@ parser.add_argument('-j', '--workers',
                     default=4,
                     type=int,
                     metavar='N',
-                    help='number of data loading workers (default: 32)')
+                    help='number of data loading workers (default: 4)')
 
 parser.add_argument('-te', '--train-epochs',
                     default=1,
