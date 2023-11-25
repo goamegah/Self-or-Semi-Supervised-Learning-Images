@@ -6,6 +6,74 @@ We assume that we dispose of **100** samples **labeled data** for training deep 
 architecture for image classification tasks. Our dataset is **MNIST** handwritten digit. 
 Hence, we dispose of 100 $X$ and 100 $y$.
 
+## Run Models
+In order to run models, try the following commands according to specific model.
+
+### LeNet5
+
+Moving through LeNet5 folder and move to ```run.py```
+
+```shell
+$ python run.py --mode train --epochs 100 
+```
+
+Let's breaking down available flags
+
+- ```-m```, ```--mode```: which mode use during running model (```train``` or ```eval```)
+- ```-data```: path to store or get dataset
+- ```-dn```, ```--dataset-name```: which dataset use (default ```MNIST```)
+- ```-a```, ```--arch```: architecture use as base line
+- ```-b```, ```--batch-size```: train batch size
+- ```-eval-batch-size```: eval batch size when **eval mode**
+- ```--lr```, ```--learning-rate```: learning rate
+
+### ResNet-18
+
+Moving through ResNet-18 folder and move to ```run.py```
+
+```shell
+$ python run.py --mode train --epochs 100 
+```
+
+Let's breaking down available flags
+
+- ```-m```, ```--mode```: which mode use during running model (```train``` or ```eval```)
+- ```-data```: path to store or get dataset
+- ```-dn```, ```--dataset-name```: which dataset use (default ```MNIST```)
+- ```-a```, ```--arch```: architecture use as base line
+- ```-b```, ```--batch-size```: train batch size
+- ```-eval-batch-size```: eval batch size when **eval mode**
+- ```--lr```, ```--learning-rate```: learning rate
+
+### SimCLR
+
+Moving through SimCLR folder and move to ```run.py```
+
+```shell
+$ python run.py --mode train --train-mode finetune --train-epochs 100
+```
+
+Let's breaking down available flags
+
+- ```-m```, ```--mode```: which mode use during running model (```train``` or ```eval```)
+- ```-tm```, ```--train-mode```:  type of training (```finetune``` or ```pretrain```)
+  - **pretrain** for training contrastive layer
+  - **finetune** for training classifier layer by freezing backbone(ResNet-18) pretrained layer.
+-  ```-j```, ```--workers```: number of data loading workers
+-  ```-te```, ```--train-epochs```: number of total epochs to run train'
+-  ```-ee```, ```--eval-epochs```: number of total epochs to run test
+-  ```-wd```, ```--weight-decay```: weight decay (default: 1e-4)
+-  ```-s```, ```--seed```: seed
+- ```--out-dim```: projection head out dimension
+-  ```--temperature```: temperature
+- ```-data```: path to store or get dataset
+- ```-dn```, ```--dataset-name```: which dataset use (default ```MNIST```)
+- ```-a```, ```--arch```: architecture use as base line
+- ```-b```, ```--batch-size```: train batch size
+- ```-eval-batch-size```: eval batch size when **eval mode**
+- ```--lr```, ```--learning-rate```: learning rate
+
+
 
 ## Libraries Used In This Project
 
