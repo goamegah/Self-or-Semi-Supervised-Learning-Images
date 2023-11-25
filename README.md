@@ -47,4 +47,12 @@ It's also recommended to check the versions in JupyterLab by running the `jupyte
 ![check_1](figures/check_2.png)
 
 
+## More installation (Optional)
+Fast data loading feedback on Tensorboard (Source: https://github.com/tensorflow/tensorboard/issues/4784)
+```shell
+$ pip uninstall -y tensorboard tb-nightly &&
+$ pip install tb-nightly  # must have at least tb-nightly==2.5.0a20210316
+```
+
+
 
