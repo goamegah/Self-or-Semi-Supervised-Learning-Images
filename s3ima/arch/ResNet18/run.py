@@ -231,7 +231,7 @@ def main():
                       9: '9'}
 
         mat = compute_confusion_matrix(model=model, data_loader=test_loader, device=torch.device('cpu'))
-        print(mat)
+        # print(mat)
         plot_confusion_matrix(mat, class_names=class_dict.values(), results_dir='./figures')
         plt.show()
 

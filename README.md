@@ -66,20 +66,21 @@ Let's breaking down available flags
 -  ```-s```, ```--seed```: seed
 - ```--out-dim```: projection head out dimension
 -  ```--temperature```: temperature
-- ```-data```: path to store or get dataset
+- ```--data```: path to store or get dataset
 - ```-dn```, ```--dataset-name```: which dataset use (default ```MNIST```)
 - ```-a```, ```--arch```: architecture use as base line
 - ```-b```, ```--batch-size```: train batch size
-- ```-eval-batch-size```: eval batch size when **eval mode**
-- ```--lr```, ```--learning-rate```: learning rate
+- ```--eval-batch-size```: eval batch size when **eval mode**
+- ```-lr```, ```--learning-rate```: learning rate
 
-# Feature Evaluation
+## Feature Evaluation
 
 Feature evaluation is done using a linear model protocol.
 
 First, we learned features using SimCLR on the ```MNIST unsupervised``` set. 
 Then, we train a linear classifier on top of the frozen features from SimCLR. 
-The linear model is trained on features extracted from the ```MNIST train``` set and evaluated on the ```MNIST test``` set.
+The linear model is trained on features extracted from the ```MNIST train``` 
+set and evaluated on the ```MNIST test``` set.
 
 Check the [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/goamegah/s3ima/blob/master/s3ima/arch/SimCLR/prototype/eval.ipynb) notebook for reproducibility.
 
@@ -123,7 +124,7 @@ pip install -r requirements.txt
 Then, after completing the installation, please check if all the packages are installed and are up to date using
 
 ```
-python_environment_check.py
+python python_environment_check.py
 ```
 
 ![check_1](figures/check_1.png)
