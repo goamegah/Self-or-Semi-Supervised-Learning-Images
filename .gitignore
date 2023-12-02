@@ -165,6 +165,7 @@ s3ima/arch/LeNet5/data/MNIST
 s3ima/arch/ResNet18/data/MNIST
 s3ima/arch/SimCLR/datasets/MNIST
 s3ima/arch/SimCLR/prototype/data
+s3ima/arch/SimCLR/data*
 
 s3ima/arch/SimCLR/prototype/resnet_pretrained.tar
 

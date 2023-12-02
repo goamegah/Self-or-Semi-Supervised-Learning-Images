@@ -38,7 +38,7 @@ def info_nce_loss(features, args):
     # select only the negatives
     negatives = similarity_matrix[~labels.bool()].view(similarity_matrix.shape[0], -1)
 
-    logits = torch.cat([positives, negatives], dim=1)
+    logits = torch.cat(tensors=[positives, negatives], dim=1)
     labels = torch.zeros(logits.shape[0], dtype=torch.long).to(args.device)
 
     logits = logits / args.temperature
@@ -50,7 +50,7 @@ def train_simclr(model, optimizer, scheduler,
                  criterion=None):
     scaler = GradScaler(enabled=args.fp16_precision)
 
-    writer = SummaryWriter()
+    writer = SummaryWriter(log_dir='simclr_run')
     logging.basicConfig(filename=os.path.join(writer.log_dir, 'training.log'), level=logging.DEBUG)
 
     # save config file
