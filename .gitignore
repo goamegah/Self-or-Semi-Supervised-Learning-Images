@@ -160,6 +160,7 @@ cython_debug/
 /.idea/modules.xml
 /.idea/s3ima.iml
 /.idea
+*.xml
 s3ima/arch/LeNet5/data/MNIST
 s3ima/arch/ResNet18/data/MNIST
 s3ima/arch/SimCLR/datasets/MNIST
