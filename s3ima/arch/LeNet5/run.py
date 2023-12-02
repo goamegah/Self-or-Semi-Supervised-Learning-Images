@@ -90,7 +90,7 @@ parser.add_argument('--wd', '--weight-decay',
                     help='weight decay (default: 1e-4)',
                     dest='weight_decay')
 
-parser.add_argument('--n_classes',
+parser.add_argument('--n-classes',
                     default=10,
                     type=int,
                     help='number of classes (default: 10)')

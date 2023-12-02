@@ -1,120 +1,71 @@
 import torch
-from torchvision import transforms
 from torchvision import datasets
-# from torch.utils.data import SubsetRandomSampler
-from torch.utils.data import DataLoader, SubsetRandomSampler
-from torch.utils.data import Subset, ConcatDataset
-from helper_augmentation import SimclrViewGenerator
+from torch.utils.data import DataLoader
+from torch.utils.data import SubsetRandomSampler, Subset
+from torchvision import transforms
+from sklearn.model_selection import train_test_split
+import numpy as np
 
 
-class SimclrDataset:
+def get_dataloaders_mnist(batch_size,
+                          eval_batch_size,
+                          num_workers=0,
+                          train_size=None,
+                          train_transforms=None,
+                          test_transforms=None):
+    if train_transforms is None:
+        train_transforms = transforms.ToTensor()
 
-    def __init__(self, root: str = "data"):
-        self.root = root
+    if test_transforms is None:
+        test_transforms = transforms.ToTensor()
 
-    @staticmethod
-    def get_transforms(size, s):
-        color_jitter = transforms.ColorJitter(0.8 * s, 0.8 * s, 0.8 * s, 0.2 * s)
-        transform = transforms.Compose([transforms.RandomResizedCrop(size=size),
-                                        transforms.RandomHorizontalFlip(),
-                                        transforms.RandomApply(transforms=[color_jitter], p=0.8),
-                                        transforms.RandomGrayscale(p=0.2),
-                                        transforms.GaussianBlur(kernel_size=3),
-                                        transforms.ToTensor()])
+    train_dataset = datasets.MNIST(root='data',
+                                   train=True,
+                                   transform=train_transforms,
+                                   download=True)
 
-        return transform
+    test_dataset = datasets.MNIST(root='data',
+                                  train=False,
+                                  transform=test_transforms)
 
-    def get_dataset(self, dataset_name: str,
-                    n_views: int,
-                    finetune_validation_fraction=None,
-                    args=None):
+    if train_size is not None:
 
-        if dataset_name == "mnist":
+        # sample 100 data with same classes proportion
+        train_idx, validation_idx = train_test_split(np.arange(len(train_dataset)),
+                                                     train_size=train_size,
+                                                     random_state=1,
+                                                     shuffle=True,
+                                                     stratify=train_dataset.targets.numpy())
 
-            test_dataset = datasets.MNIST(
-                root=self.root,
-                train=False,
-                download=True,
-                transform=transforms.ToTensor()
-            )
+        # Subset dataset for train and val
+        train_dataset = Subset(train_dataset, train_idx)
+        valid_dataset = Subset(train_dataset, validation_idx)
 
-            # mnist_dataset = ConcatDataset([train_dataset, test_dataset])
+        train_loader = DataLoader(train_dataset,
+                                  batch_size=batch_size,
+                                  num_workers=num_workers,
+                                  drop_last=False,
+                                  shuffle=True)
 
-            if args.mode == "train":
+        valid_loader = DataLoader(dataset=valid_dataset,
+                                  batch_size=eval_batch_size,
+                                  num_workers=8,
+                                  drop_last=False,
+                                  shuffle=True)
 
-                # pretrain dataset
-                mnist_pretrain_dataset = datasets.MNIST(
-                    root=self.root,
-                    train=True,
-                    download=True,
-                    transform=SimclrViewGenerator(
-                        transform=self.get_transforms(size=28, s=1),
-                        n_views=n_views
-                    )
-                )
+    else:
+        train_loader = DataLoader(dataset=train_dataset,
+                                  batch_size=batch_size,
+                                  num_workers=num_workers,
+                                  drop_last=True,
+                                  shuffle=True)
 
-                # which train mode
+    test_loader = DataLoader(dataset=test_dataset,
+                             batch_size=batch_size,
+                             num_workers=num_workers,
+                             shuffle=False)
 
-                if args.train_mode == "finetune":
-
-                    mnist_train_dataset = datasets.MNIST(
-                        root=self.root,
-                        train=True,
-                        download=False,
-                        transform=transforms.ToTensor()
-                    )
-
-                    if finetune_validation_fraction is not None:
-                        num = int(finetune_validation_fraction * 100)
-                        train_indices = torch.arange(0, 100 - num)
-                        valid_indices = torch.arange(100 - num, 100)
-
-                        # train_sampler = SubsetRandomSampler(train_indices)
-                        # valid_sampler = SubsetRandomSampler(valid_indices)
-
-                        # 100 samples off of train dataset
-                        mnist_train_dataset_70 = Subset(dataset=mnist_train_dataset,
-                                                        indices=train_indices)
-
-                        mnist_valid_dataset_30 = Subset(dataset=mnist_train_dataset,
-                                                        indices=valid_indices)
-
-                        return mnist_train_dataset_70, mnist_valid_dataset_30, test_dataset
-
-                    else:   # not validation dataset
-                        train_indices = torch.arange(0, 100)
-                        mnist_train_dataset_100 = Subset(dataset=mnist_train_dataset,
-                                                         indices=train_indices)
-                        return mnist_train_dataset_100, None, test_dataset
-
-                else:   # mode pretrain
-                    return mnist_pretrain_dataset, None, None
-
-            else:   # eval mode
-
-                """
-                # finetune train dataset (70)
-                mnist_finetune_train_dataset = Subset(
-                    dataset=test_dataset,
-                    indices=torch.arange(end=70)
-                )
-
-                # finetune valid dataset (10)
-                mnist_finetune_valid_dataset = Subset(
-                    dataset=test_dataset,
-                    indices=torch.arange(start=70, end=80)
-                )
-
-                # finetune test dataset (20)
-                mnist_finetune_test_dataset = Subset(
-                    dataset=test_dataset,
-                    indices=torch.arange(start=80, end=100)
-                )
-                """
-                # return mnist_finetune_train_dataset, mnist_finetune_valid_dataset, mnist_finetune_test_dataset
-                return None, None, test_dataset
-
-        else:   # Other dataset
-            pass
-
-        return None
+    if train_size is None:
+        return train_loader, test_loader
+    else:
+        return train_loader, valid_loader, test_loader
