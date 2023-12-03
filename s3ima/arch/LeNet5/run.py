@@ -1,3 +1,11 @@
+
+import argparse
+from s3ima.arch.LeNet5.model import LeNet5
+from helper_evaluation import set_all_seeds, compute_confusion_matrix, compute_accuracy
+from helper_train import train_model
+from helper_plotting import plot_training_loss, plot_accuracy, show_examples, plot_confusion_matrix
+from helper_dataset import get_dataloaders_mnist
+
 import torch
 import torch.backends.cudnn as cudnn
 import torchvision
@@ -7,17 +15,9 @@ import sys
 import os
 
 sys.path.insert(0, "../../../")
-# from arch
-from s3ima.arch.LeNet5.model import LeNet5
+
 
 # From local helper files
-
-from helper_evaluation import set_all_seeds, compute_confusion_matrix, compute_accuracy
-from helper_train import train_model
-from helper_plotting import plot_training_loss, plot_accuracy, show_examples, plot_confusion_matrix
-from helper_dataset import get_dataloaders_mnist
-
-import argparse
 
 model_names = ['ResNet18', 'LeNet5']
 
@@ -139,7 +139,7 @@ def main():
     resize_transform = torchvision.transforms.Compose(
         [torchvision.transforms.Resize((32, 32)),
          torchvision.transforms.ToTensor(),
-         torchvision.transforms.Normalize((0.5,), (0.5,))])
+         torchvision.transforms.Normalize(mean=(0.5,), std=(0.5,))])
 
     train_loader, valid_loader, test_loader = get_dataloaders_mnist(args=args,
                                                                     validation_fraction=0.3,

@@ -4,15 +4,19 @@ import torch.backends.cudnn as cudnn
 from torch.nn import CrossEntropyLoss
 from torchvision import models
 from torch.utils.data import DataLoader
-from helper_train import train
-from helper_evaluation import compute_accuracy, compute_topk_accuracy
+
 from simclr_dataset import SimclrDataset
 from simclr_train import train_simclr
 from basemodel import ResNet18SimCLR
 from s3ima.arch.ResNet18.model import ResNet18, BasicBlock
-from helper_dataset import get_dataloaders_mnist
 
-import pathlib
+from helper_train import train
+from helper_dataset import get_dataloaders_mnist
+from helper_evaluation import set_all_seeds, compute_confusion_matrix, compute_accuracy, compute_topk_accuracy
+from helper_plotting import plot_training_loss, plot_accuracy, show_examples, plot_confusion_matrix
+import matplotlib.pyplot as plt
+import os
+import pickle
 
 model_names = sorted(name for name in models.__dict__
                      if name.islower() and not name.startswith("__")
@@ -146,7 +150,7 @@ def main():
         args.device = torch.device('cpu')
         args.gpu_index = -1
 
-    torch.manual_seed(args.seed)
+    set_all_seeds(args.seed)
 
     if args.mode == "eval":
         train_dl, valid_dl, test_dl = get_dataloaders_mnist(batch_size=10, eval_batch_size=256,
@@ -206,6 +210,9 @@ def main():
                 train_simclr(model=model, optimizer=optimizer, scheduler=scheduler,
                              train_loader=train_dl, args=args, criterion=criterion)
         else:
+            # dict for saving results
+            summary = {}
+
             train_dl, valid_dl, test_dl = get_dataloaders_mnist(batch_size=10, eval_batch_size=256,
                                                                 num_workers=8, train_size=100)
             checkpoint = torch.load(f='./prototype/resnet_pretrained.tar', map_location=args.device)
@@ -232,8 +239,63 @@ def main():
             optimizer = torch.optim.Adam(model.parameters(), lr=3e-4, weight_decay=0.0008)
             criterion = CrossEntropyLoss()
 
-            train(model=model, optimizer=optimizer, criterion=criterion,
-                  train_loader=train_dl, valid_loader=test_dl, test_loader=test_dl, args=args)
+            minibatch_loss_list, train_acc_list, valid_acc_list = train(model=model, optimizer=optimizer,
+                                                                        criterion=criterion, train_loader=train_dl,
+                                                                        valid_loader=test_dl, test_loader=test_dl,
+                                                                        args=args)
+            plot_training_loss(minibatch_loss_list=minibatch_loss_list,
+                               num_epochs=args.train_epochs,
+                               iter_per_epoch=len(train_dl),
+                               results_dir="./figures",
+                               averaging_iterations=10)
+            plt.show()
+
+            plot_accuracy(train_acc_list=train_acc_list,
+                          valid_acc_list=valid_acc_list,
+                          results_dir='./figures')
+            # plt.ylim([80, 100])
+            plt.show()
+
+            model.cpu()
+            show_examples(model=model, data_loader=test_dl, results_dir='./figures')
+            plt.show()
+
+            # class used for confusion matrix axis ticks
+            class_dict = {0: '0',
+                          1: '1',
+                          2: '2',
+                          3: '3',
+                          4: '4',
+                          5: '5',
+                          6: '6',
+                          7: '7',
+                          8: '8',
+                          9: '9'}
+
+            # Confusion matrix for testing arch
+            mat = compute_confusion_matrix(model=model,
+                                           data_loader=test_dl,
+                                           device=torch.device('cpu'))
+            plot_confusion_matrix(mat,
+                                  class_names=class_dict.values(),
+                                  results_dir='./figures')
+            plt.show()
+
+            summary['minibatch_loss_list'] = minibatch_loss_list
+            summary['valid_acc_list'] = valid_acc_list
+            summary['train_acc_list'] = train_acc_list
+            summary['confusion_matrix'] = mat
+            summary['num_epochs'] = args.train_epochs
+            summary['iter_per_epoch'] = len(train_dl)
+            summary['averaging_iterations'] = 100
+
+            # Save trained arch for further usage
+            os.makedirs("./saved_data", exist_ok=True)
+
+            # save dictionary to person_data.pkl file
+            with open('./saved_data/LeNet5_summary.pkl', 'wb') as fp:
+                pickle.dump(summary, fp)
+                print('dictionary saved successfully to file')
 
 
 if __name__ == "__main__":
