@@ -73,6 +73,10 @@ Let's breaking down available flags
 - ```--eval-batch-size```: eval batch size when **eval mode**
 - ```-lr```, ```--learning-rate```: learning rate
 
+### SGAN
+Due to experiment stage of SGAN, you can switch to  ```experiments/SGAN ``` folder and run python notebook
+relate to it.
+
 ## Feature Evaluation
 
 Feature evaluation is done using a linear model protocol.
@@ -110,8 +114,6 @@ installing them before attending the event:
 - torch >= 2.0.1 (The PyTorch deep learning library)
 - torchvision >= 0.15.2 (PyTorch utilities for computer vision)
 - torchmetrics >= 0.11.4 (Metrics for PyTorch)
-- transformers >= 4.30.2 (Language transformers and LLMs for PyTorch)
-- lightning >= 2.0.3 (A library for advanced PyTorch features: multi-GPU, mixed-precision etc.)
 
 To install these requirements most conveniently, you can use the `requirements.txt` file:
 
