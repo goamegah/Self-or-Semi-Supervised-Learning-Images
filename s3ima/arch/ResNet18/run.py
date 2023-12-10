@@ -241,7 +241,7 @@ def main():
         summary['confusion_matrix'] = mat
         summary['num_epochs'] = args.epochs
         summary['iter_per_epoch'] = len(train_loader)
-        summary['averaging_iterations'] = 100
+        summary['averaging_iterations'] = 10
 
         # Save trained arch for further usage
         os.makedirs("./saved_data", exist_ok=True)

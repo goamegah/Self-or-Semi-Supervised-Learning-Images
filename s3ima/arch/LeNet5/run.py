@@ -1,5 +1,8 @@
 
+import sys
+import os
 import argparse
+sys.path.insert(0, "../../../")
 from s3ima.arch.LeNet5.model import LeNet5
 from helper_evaluation import set_all_seeds, compute_confusion_matrix, compute_accuracy
 from helper_train import train_model
@@ -11,15 +14,12 @@ import torch.backends.cudnn as cudnn
 import torchvision
 import matplotlib.pyplot as plt
 import pickle
-import sys
-import os
 
-sys.path.insert(0, "../../../")
 
 
 # From local helper files
 
-model_names = ['ResNet18', 'LeNet5']
+model_names = ['LeNet5']
 
 ##########################
 # SETTINGS
@@ -183,7 +183,7 @@ def main():
                            num_epochs=args.epochs,
                            iter_per_epoch=len(train_loader),
                            results_dir="./figures",
-                           averaging_iterations=100)
+                           averaging_iterations=10)
         plt.show()
 
         plot_accuracy(train_acc_list=train_acc_list,
@@ -223,7 +223,7 @@ def main():
         summary['confusion_matrix'] = mat
         summary['num_epochs'] = args.epochs
         summary['iter_per_epoch'] = len(train_loader)
-        summary['averaging_iterations'] = 100
+        summary['averaging_iterations'] = 10
 
         # Save trained arch for further usage
         os.makedirs("./saved_data", exist_ok=True)
