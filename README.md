@@ -6,6 +6,23 @@ We assume that we dispose of **100** samples **labeled data** for training deep 
 architecture for image classification tasks. Our dataset is **MNIST** handwritten digit. 
 Hence, we dispose of 100 $X$ and 100 $y$.
 
+## Models Overview
+
+### SimCLR 
+
+
+<div align="center">
+  <img width="50%" alt="SimCLR Illustration" src="https://1.bp.blogspot.com/--vH4PKpE9Yo/Xo4a2BYervI/AAAAAAAAFpM/vaFDwPXOyAokAC8Xh852DzOgEs22NhbXwCLcBGAsYHQ/s1600/image4.gif">
+  <h6>credit: google SimCLR</h6>
+</div>
+
+<div align="center">
+  An illustration of SimCLR (from <a href="https://github.com/google-research/simclr/blob/master/README.md">google-research SimCLR repository</a>).
+</div>
+
+### SGAN 
+
+
 ## Run Models
 In order to run models, try the following commands according to specific model.
 
@@ -73,6 +90,10 @@ Let's breaking down available flags
 - ```--eval-batch-size```: eval batch size when **eval mode**
 - ```-lr```, ```--learning-rate```: learning rate
 
+### SGAN
+Due to experiment stage of SGAN, you can switch to  ```experiments/SGAN ``` folder and run python notebook
+relate to it.
+
 ## Feature Evaluation
 
 Feature evaluation is done using a linear model protocol.
@@ -110,8 +131,6 @@ installing them before attending the event:
 - torch >= 2.0.1 (The PyTorch deep learning library)
 - torchvision >= 0.15.2 (PyTorch utilities for computer vision)
 - torchmetrics >= 0.11.4 (Metrics for PyTorch)
-- transformers >= 4.30.2 (Language transformers and LLMs for PyTorch)
-- lightning >= 2.0.3 (A library for advanced PyTorch features: multi-GPU, mixed-precision etc.)
 
 To install these requirements most conveniently, you can use the `requirements.txt` file:
 
@@ -129,7 +148,8 @@ python python_environment_check.py
 
 ![check_1](figures/check_1.png)
 
-It's also recommended to check the versions in JupyterLab by running the `jupyter_environment_check.ipynb` in this directory. Ideally, it should look like as follows:
+It's also recommended to check the versions in JupyterLab by running the `jupyter_environment_check.ipynb` in this 
+directory. Ideally, it should look like as follows:
 
 ![check_1](figures/check_2.png)
 

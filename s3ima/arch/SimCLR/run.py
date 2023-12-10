@@ -141,6 +141,7 @@ parser.add_argument('--gpu-index',
 def main():
     args = parser.parse_args()
     assert args.n_views == 2, "Only two view training is supported. Please use --n-views 2."
+
     # check if gpu training is available
     if not args.disable_cuda and torch.cuda.is_available():
         args.device = torch.device('cuda')
@@ -287,15 +288,19 @@ def main():
             summary['confusion_matrix'] = mat
             summary['num_epochs'] = args.train_epochs
             summary['iter_per_epoch'] = len(train_dl)
-            summary['averaging_iterations'] = 100
+            summary['averaging_iterations'] = 10
 
             # Save trained arch for further usage
-            os.makedirs("./saved_data", exist_ok=True)
+            os.makedirs(name="./saved_data", exist_ok=True)
 
             # save dictionary to person_data.pkl file
-            with open('./saved_data/LeNet5_summary.pkl', 'wb') as fp:
+            with open('./saved_data/SimCLR_summary.pkl', 'wb') as fp:
                 pickle.dump(summary, fp)
                 print('dictionary saved successfully to file')
+
+            # save
+            torch.save(obj=model.state_dict(), f="saved_data/model.pt")
+            torch.save(obj=optimizer.state_dict(), f="saved_data/optimizer.pt")
 
 
 if __name__ == "__main__":
