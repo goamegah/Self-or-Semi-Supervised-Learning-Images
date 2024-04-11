@@ -22,6 +22,15 @@ Hence, we dispose of 100 $X$ and 100 $y$.
 
 ### SGAN 
 
+<div align="center">
+  <img width="50%" alt="SimCLR Illustration" src="figures/sgan_cover.png">
+</div>
+
+<div align="center">
+  An illustration of SGAN (from our document).
+</div>
+
+
 
 ## Run Models
 In order to run models, try the following commands according to specific model.
